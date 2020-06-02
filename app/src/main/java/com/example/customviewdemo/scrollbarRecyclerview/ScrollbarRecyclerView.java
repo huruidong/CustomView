@@ -4,10 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 
 public class ScrollbarRecyclerView extends RecyclerView {
 
@@ -100,12 +102,26 @@ public class ScrollbarRecyclerView extends RecyclerView {
     private void initScaleTrackProp(Canvas canvas) {
 
         trackHeight = (int) (getHeight() * scrollbarScale);
-        trackLeft = (getWidth() - getPaddingEnd() - mScaleScrollbarTrackWidth - mScaleScrollbarDefaultPadding);
+
         trackbarTop = (getHeight() - trackHeight) / 2;
-        trackRight = trackLeft + mScaleScrollbarTrackWidth;
         trackBottom = trackbarTop + trackHeight;
 
+        if (isLayoutRtl()) {
+            trackLeft = getPaddingStart() + mScaleScrollbarDefaultPadding;
+        } else {
+            trackLeft = (getWidth() - getPaddingEnd() - mScaleScrollbarTrackWidth - mScaleScrollbarDefaultPadding);
+        }
+        trackRight = trackLeft + mScaleScrollbarTrackWidth;
+
         isNeedRefreshScaleTrack = false;
+    }
+
+    public boolean isLayoutRtl() {
+        if (Build.VERSION.SDK_INT >= 17) {
+            return View.LAYOUT_DIRECTION_RTL == this.getLayoutDirection();
+        } else {
+            return false;
+        }
     }
 
     //
@@ -127,10 +143,10 @@ public class ScrollbarRecyclerView extends RecyclerView {
             int extent = computeVerticalScrollExtent();
 
             int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
-            float thumbLeft   = trackLeft + ((mScaleScrollbarTrackWidth - mScaleScrollbarThumbWidth) / 2);
             float thumbTop    = trackbarTop + (trackHeight - thumbHeight) * 1f * (offset * 1f / (range - extent));
-            float thumbRight  = thumbLeft + mScaleScrollbarThumbWidth;
             float thumbBottom = thumbTop + thumbHeight;
+            float thumbLeft = trackLeft + ((mScaleScrollbarTrackWidth - mScaleScrollbarThumbWidth) / 2);
+            float thumbRight = thumbLeft + mScaleScrollbarThumbWidth;
 
             c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom,
                             mScaleScrollbarThumbWidth / 2, mScaleScrollbarThumbWidth / 2,
