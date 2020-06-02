@@ -8,21 +8,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 
 public class ScrollbarRecyclerView extends RecyclerView {
 
-    private Paint mBgArcPaint;
-    private Paint mArcPaint;
-    private Paint mCirclePaint;
-    private Paint mBgCirclePaint;
+    private float mScaleScrollbarTrackWidth     = 20;
+    private float mScaleScrollbarThumbWidth     = 16;
+    private float mScaleScrollbarDefaultPadding = 16;
 
+    private int mScaleScrollbarTrackColor = Color.parseColor("#00ff00");
+    private int mScaleScrollbarThumbColor = Color.parseColor("#ff0000");
 
-    private float mScrollbarTrackWidth     = 20;
-    private float mScrollbarThumbWidth     = 16;
-    private float mScrollbarDefaultPadding = 16;
+    private Paint thumbScalePaint, trackScalePaint;
 
-    private int topBottomPadding = 30 + 40;
+    private boolean isUseCustomScaleScrollbar = true;
+    private boolean isNeedRefreshScaleTrack   = true;
+
+    private int   trackHeight;
+    private float trackLeft, trackbarTop, trackRight, trackBottom;
+    private float scrollbarScale = 0.3f;
 
     public ScrollbarRecyclerView(@NonNull Context context) {
         this(context, null);
@@ -34,32 +37,75 @@ public class ScrollbarRecyclerView extends RecyclerView {
 
     public ScrollbarRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
+        if (isUseCustomScaleScrollbar) {
+            initScaleScrollbarPaint();
+        }
     }
 
     /**
      * 定义画笔样式
      **/
-    private void init() {
-        mBgArcPaint = new Paint();
-        mBgArcPaint.setAntiAlias(true);
-        mBgArcPaint.setColor(Color.RED);
-        mBgArcPaint.setStrokeWidth(mScrollbarTrackWidth);
-        mBgArcPaint.setStyle(Paint.Style.STROKE);
+    private void initScaleScrollbarPaint() {
 
-        mArcPaint = new Paint();
-        mArcPaint.setAntiAlias(true);
-        mArcPaint.setColor(Color.BLUE);
-        mArcPaint.setStrokeWidth(mScrollbarTrackWidth);
-        mArcPaint.setStyle(Paint.Style.STROKE);
-        //		setOnScrollListener(mOnScrollListener);
-        mCirclePaint = new Paint();
-        mCirclePaint.setAntiAlias(true);
-        mCirclePaint.setColor(Color.YELLOW);
+        trackScalePaint = new Paint();
+        trackScalePaint.setAntiAlias(true);
+        trackScalePaint.setColor(mScaleScrollbarTrackColor);
 
-        mBgCirclePaint = new Paint();
-        mBgCirclePaint.setAntiAlias(true);
-        mBgCirclePaint.setColor(Color.GREEN);
+        thumbScalePaint = new Paint();
+        thumbScalePaint.setColor(mScaleScrollbarThumbColor);
+        thumbScalePaint.setAntiAlias(true);
+
+    }
+
+    public void setmScaleScrollbarTrackColor(int mScaleScrollbarTrackColor) {
+        this.mScaleScrollbarTrackColor = mScaleScrollbarTrackColor;
+        if (null != trackScalePaint) {
+            trackScalePaint.setColor(mScaleScrollbarTrackColor);
+        }
+    }
+
+    public void setmScaleScrollbarThumbColor(int mScaleScrollbarThumbColor) {
+        this.mScaleScrollbarThumbColor = mScaleScrollbarThumbColor;
+        if (null != thumbScalePaint) {
+            thumbScalePaint.setColor(mScaleScrollbarThumbColor);
+        }
+    }
+
+    public void setScrollbarScale(float scrollbarScale) {
+        this.scrollbarScale = scrollbarScale;
+        isNeedRefreshScaleTrack = true;
+    }
+
+    public void setUseCustomScaleScrollbar(boolean useCustomScaleScrollbar) {
+        isUseCustomScaleScrollbar = useCustomScaleScrollbar;
+        if (isUseCustomScaleScrollbar) {
+            initScaleScrollbarPaint();
+        }
+    }
+
+    public void setmScaleScrollbarTrackWidth(float mScaleScrollbarTrackWidth) {
+        this.mScaleScrollbarTrackWidth = mScaleScrollbarTrackWidth;
+        isNeedRefreshScaleTrack = true;
+    }
+
+    public void setmScaleScrollbarThumbWidth(float mScaleScrollbarThumbWidth) {
+        this.mScaleScrollbarThumbWidth = mScaleScrollbarThumbWidth;
+    }
+
+    public void setmScaleScrollbarDefaultPadding(float mScaleScrollbarDefaultPadding) {
+        this.mScaleScrollbarDefaultPadding = mScaleScrollbarDefaultPadding;
+        isNeedRefreshScaleTrack = true;
+    }
+
+    private void initScaleTrackProp(Canvas canvas) {
+
+        trackHeight = (int) (getHeight() * scrollbarScale);
+        trackLeft = (getWidth() - getPaddingEnd() - mScaleScrollbarTrackWidth - mScaleScrollbarDefaultPadding);
+        trackbarTop = (getHeight() - trackHeight) / 2;
+        trackRight = trackLeft + mScaleScrollbarTrackWidth;
+        trackBottom = trackbarTop + trackHeight;
+
+        isNeedRefreshScaleTrack = false;
     }
 
     //
@@ -67,38 +113,29 @@ public class ScrollbarRecyclerView extends RecyclerView {
     public void draw(Canvas c) {
         super.draw(c);
 
-        int   width           = getWidth();
-        int   height          = getHeight();
-        int   trackHeight = height / 3;
-        float trackLeft   = (width - getPaddingEnd() - mScrollbarTrackWidth - mScrollbarDefaultPadding);
-        float trackbarTop    = (height - trackHeight) / 2;
-        float trackRight  = trackLeft + mScrollbarTrackWidth;
-        float trackBottom = trackbarTop + trackHeight;
+        if (isUseCustomScaleScrollbar) {
+            if (isNeedRefreshScaleTrack) {
+                initScaleTrackProp(c);
+            }
 
-        Paint trackPaint = new Paint();
-        trackPaint.setAntiAlias(true);
-        trackPaint.setColor(Color.parseColor("#00f000"));
-        c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
-                        mScrollbarTrackWidth / 2, mScrollbarTrackWidth / 2, trackPaint);
+            c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
+                            mScaleScrollbarTrackWidth / 2, mScaleScrollbarTrackWidth / 2,
+                            trackScalePaint);
 
-        int range  = computeVerticalScrollRange();
-        int offset = computeVerticalScrollOffset();
-        int extent = computeVerticalScrollExtent();
+            int range  = computeVerticalScrollRange();
+            int offset = computeVerticalScrollOffset();
+            int extent = computeVerticalScrollExtent();
 
-        int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
-        float thumbLeft   = trackLeft + ((mScrollbarTrackWidth - mScrollbarThumbWidth) / 2) -1 ;
-        float thumbTop    = trackbarTop + 1 + (trackHeight-thumbHeight) * 1f * (offset * 1f / (range - extent));
-        float thumbRight  = thumbLeft + mScrollbarThumbWidth;
-        float thumbBottom = thumbTop + thumbHeight - 3;
+            int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
+            float thumbLeft   = trackLeft + ((mScaleScrollbarTrackWidth - mScaleScrollbarThumbWidth) / 2);
+            float thumbTop    = trackbarTop + (trackHeight - thumbHeight) * 1f * (offset * 1f / (range - extent));
+            float thumbRight  = thumbLeft + mScaleScrollbarThumbWidth;
+            float thumbBottom = thumbTop + thumbHeight;
 
-        Log.d("huruidong",
-              "at ssui at com ---> draw() " + "\nrange: " + range + "\noffset: " + offset + "\nextent: " + extent + "\ntrackLeft: " + trackLeft + "\ntrackbarTop: " + trackbarTop + "\ntrackRight: " + trackRight + "\ntrackBottom: " + trackBottom + "\nthumbHeight: " + thumbHeight + "\nthumbLeft: " + thumbLeft + "\nthumbTop: " + thumbTop + "\nthumbRight: " + thumbRight + "\nthumbBottom: " + thumbBottom);
-
-        Paint thumbPaint = new Paint();
-        thumbPaint.setColor(Color.parseColor("#ff0000"));
-        thumbPaint.setAntiAlias(true);
-        c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom, mScrollbarThumbWidth / 2,
-                        mScrollbarThumbWidth / 2, thumbPaint);
+            c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom,
+                            mScaleScrollbarThumbWidth / 2, mScaleScrollbarThumbWidth / 2,
+                            thumbScalePaint);
+        }
 
     }
 

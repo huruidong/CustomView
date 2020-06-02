@@ -6,7 +6,7 @@ import android.view.Window;
 
 import com.example.customviewdemo.R;
 
-public class TitleViewActivity extends Activity {
+public class TitleViewDemo extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

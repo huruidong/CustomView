@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,9 +17,9 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".titleView.TitleViewActivity"/>
+        <activity android:name=".titleView.TitleViewDemo"/>
 
-        <activity android:name=".scrollbarRecyclerview.ScrollbarRecyclerActivity"/>
+        <activity android:name=".scrollbarRecyclerview.ScrollbarRecyclerDemo"/>
 
         <activity android:name=".numberPicker.NumberPickerDemo"/>
     </application>
