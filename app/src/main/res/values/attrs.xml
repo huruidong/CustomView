@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="TitleView">
+        <attr name="textSize" format="reference|dimension"/>
+        <attr name="textColor" format="reference|color"/>
+        <attr name="text" format="reference|string" />
+        <attr name="icon" format="reference" />
+        <attr name="customView" format="reference" />
+    </declare-styleable>
+
+    <!--可回弹RecyclerView的自定义属性-->
+    <declare-styleable name="BounceRecyclerView">
+        <attr name="oritation">
+            <enum name="vertical" value="0"/>
+            <enum name="horizontal" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="NumberPicker">
+        <attr name="unitText" format="reference|string" />
+        <attr name="unitTextColor" format="reference|color" />
+        <attr name="unitTextSize" format="reference|dimension" />
+        <attr name="unitPadding" format="reference|dimension" />
+
+        <attr name="sstextColor" format="reference|color" />
+        <attr name="sstextSize" format="reference|dimension" />
+        <!-- @hide Color for the solid color background if such for optimized rendering. -->
+        <attr name="sssolidColor" format="color|reference" />
+        <!-- @hide The divider for making the selection area. -->
+        <attr name="ssselectionDivider" format="reference" />
+        <!-- @hide The height of the selection divider. -->
+        <attr name="ssselectionDividerHeight" format="dimension" />
+        <!-- @hide The distance between the two selection dividers. -->
+        <attr name="ssselectionDividersDistance" format="dimension" />
+        <!-- @hide The min height of the NumberPicker. -->
+        <attr name="ssinternalMinHeight" format="dimension" />
+        <!-- @hide The max height of the NumberPicker. -->
+        <attr name="ssinternalMaxHeight" format="dimension" />
+        <!-- @hide The min width of the NumberPicker. -->
+        <attr name="ssinternalMinWidth" format="dimension" />
+        <!-- @hide The max width of the NumberPicker. -->
+        <attr name="ssinternalMaxWidth" format="dimension" />
+        <!-- @hide The layout of the number picker. -->
+        <attr name="ssinternalLayout" format="reference"/>
+        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
+        <attr name="ssvirtualButtonPressedDrawable" format="reference"/>
+        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
+        <attr name="sshideWheelUntilFocused" format="boolean"/>
+        <attr name="unSelectedMinScaleValue" format="float"/>
+    </declare-styleable>
+
+</resources>
