@@ -44,7 +44,6 @@ import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -491,7 +490,7 @@ public class NumberPicker extends LinearLayout {
             return;
         }
         if (-1 == mUnitTextColor) {
-            mUnitTextColor = getResources().getColor(R.color.ss_primary_color);
+            mUnitTextColor = getResources().getColor(R.color.hrd_primary_color);
         }
         if (-1 == mUnitTextSize) {
             mUnitTextSize = getResources().getDimension(R.dimen.ss_numberpicker_text_size_unit);
@@ -956,7 +955,7 @@ public class NumberPicker extends LinearLayout {
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
             if (attr == R.styleable.NumberPicker_sstextColor) {
-                setTextColor(a.getColor(attr, context.getColor(R.color.ss_primary_color)));
+                setTextColor(a.getColor(attr, context.getColor(R.color.hrd_primary_color)));
             } else if (attr == R.styleable.NumberPicker_sstextSize) {
                 setTextSize((int) a.getDimension(attr, context.getResources().getDimension(
                         R.dimen.ss_numberpicker_text_size_normal)));
@@ -964,7 +963,7 @@ public class NumberPicker extends LinearLayout {
                 setUnitText(a.getString(attr));
             } else if (attr == R.styleable.NumberPicker_unitTextColor) {
                 setUnitTextColor(a.getColor(attr, context.getResources().getColor(
-                        R.color.ss_primary_color)));
+                        R.color.hrd_primary_color)));
             } else if (attr == R.styleable.NumberPicker_unitTextSize) {
                 setUnitTextSize(a.getDimension(attr, context.getResources().getDimension(
                         R.dimen.ss_numberpicker_text_size_unit)));

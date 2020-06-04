@@ -8,11 +8,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.customviewdemo.R;
+import com.example.customviewdemo.app.BaseActivity;
 import com.example.customviewdemo.numberPicker.NumberPicker;
 import com.example.customviewdemo.utils.SoundPoolUtils;
 
 
-public class NumberPickerDemo extends Activity {
+public class NumberPickerDemo extends BaseActivity {
 
     private NumberPicker   numberPicker;
     private SoundPoolUtils soundPoolUtils;
@@ -24,7 +25,6 @@ public class NumberPickerDemo extends Activity {
         setContentView(R.layout.numberpick_activity_main);
 
         getActionBar().setTitle("数字滚轮-WheelView");
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         soundPoolUtils = SoundPoolUtils.getInstance(this);
         loadId = soundPoolUtils.loadVideo(R.raw.numberpicker_sound_effect);
@@ -69,18 +69,6 @@ public class NumberPickerDemo extends Activity {
                 numberPicker.setValue((numberPicker.getValue() + 1)% numberPicker.getMaxValue());
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        //android.R.id.home对应应用程序图标的id
-        if(item.getItemId() == android.R.id.home)
-        {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }
