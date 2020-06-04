@@ -2,10 +2,18 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Material.Light">
+        <item name="android:windowBackground">@color/hrd_window_background</item>
         <!-- Customize your theme here. -->
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:colorPrimary">@color/hrd_primary_color</item>
+        <item name="android:colorPrimaryDark">@color/hrd_primary_color_dark</item>
+        <item name="android:colorAccent">@color/hrd_accent_color</item>
+
+        <item name="android:switchStyle">@style/AppTheme.SwitchStyle</item>
+    </style>
+
+    <style name="AppTheme.SwitchStyle" parent="@android:style/Widget.Material.CompoundButton.Switch">
+        <item name="android:track">@drawable/hrd_switch_track_default</item>
+        <item name="android:thumb">@drawable/hrd_switch_thumb_default</item>
     </style>
 
 </resources>

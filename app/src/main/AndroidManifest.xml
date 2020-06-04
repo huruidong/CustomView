@@ -22,6 +22,12 @@
         <activity android:name=".scrollbarRecyclerview.ScrollbarRecyclerDemo"/>
 
         <activity android:name=".numberPicker.NumberPickerDemo"/>
+
+        <activity android:name=".sswitch.SwitchDemo"/>
+
+        <activity android:name=".button.ButtonDemo"/>
+
+        <activity android:name=".radioButton.RadioDemo"/>
     </application>
 
 </manifest>

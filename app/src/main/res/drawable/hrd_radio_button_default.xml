@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!--<selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--    <item android:state_checked="true" android:drawable="@drawable/hrd_radio_button_enable_selected_default"/>-->
+<!--    <item android:drawable="@drawable/hrd_radio_button_enable_unselected_default"/>-->
+<!--</selector>-->
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/on"
+        android:drawable="@drawable/hrd_radio_selected"
+        android:state_checked="true" />
+    <item
+        android:id="@+id/off"
+        android:drawable="@drawable/hrd_radio_unselected" />
+    <transition
+        android:drawable="@drawable/hrd_btn_radio_on_to_off_animation"
+        android:fromId="@+id/on"
+        android:toId="@+id/off" />
+    <transition
+        android:drawable="@drawable/hrd_btn_radio_off_to_on_animation"
+        android:fromId="@+id/off"
+        android:toId="@+id/on" />
+</animated-selector>
