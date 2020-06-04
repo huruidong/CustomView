@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 
 import com.example.customviewdemo.R;
+import com.example.customviewdemo.app.BaseActivity;
 import com.example.customviewdemo.scrollbarRecyclerview.RecyclerViewAdapter;
 import com.example.customviewdemo.scrollbarRecyclerview.ScrollbarRecyclerView;
 
 import java.util.ArrayList;
 
-public class ScrollbarRecyclerDemo extends Activity {
+public class ScrollbarRecyclerDemo extends BaseActivity {
 
     ScrollbarRecyclerView recyclerView;
 

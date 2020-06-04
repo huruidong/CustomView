@@ -11,14 +11,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.example.customviewdemo.R;
+import com.example.customviewdemo.utils.DisplayUtils;
+
 public class ScrollbarRecyclerView extends RecyclerView {
 
-    private float mScaleScrollbarTrackWidth     = 20;
-    private float mScaleScrollbarThumbWidth     = 16;
-    private float mScaleScrollbarDefaultPadding = 16;
+    private float mScaleScrollbarTrackWidth;
+    private float mScaleScrollbarThumbWidth;
+    private float mScaleScrollbarDefaultPadding;
 
-    private int mScaleScrollbarTrackColor = Color.parseColor("#00ff00");
-    private int mScaleScrollbarThumbColor = Color.parseColor("#ff0000");
+    private int mScaleScrollbarTrackColor = Color.parseColor("#181818");
+    private int mScaleScrollbarThumbColor = Color.parseColor("#5b5b5b");
 
     private Paint thumbScalePaint, trackScalePaint;
 
@@ -48,6 +51,10 @@ public class ScrollbarRecyclerView extends RecyclerView {
      * 定义画笔样式
      **/
     private void initScaleScrollbarPaint() {
+
+        mScaleScrollbarTrackWidth = getResources().getDimensionPixelSize(R.dimen.dp_6);
+        mScaleScrollbarThumbWidth = getResources().getDimensionPixelSize(R.dimen.dp_6);
+        mScaleScrollbarDefaultPadding = getResources().getDimensionPixelSize(R.dimen.dp_10);
 
         trackScalePaint = new Paint();
         trackScalePaint.setAntiAlias(true);
@@ -154,6 +161,5 @@ public class ScrollbarRecyclerView extends RecyclerView {
         }
 
     }
-
 
 }
