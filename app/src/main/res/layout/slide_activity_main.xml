@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.example.customviewdemo.slideLayout.SlideLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:slideDirection="horizontal">
+
+        <TextView
+            android:background="@android:color/holo_red_light"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="删除"/>
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="我是从左滑SlideLayout"
+            android:background="@android:color/holo_blue_dark"/>
+
+    </com.example.customviewdemo.slideLayout.SlideLayout>
+
+</LinearLayout>
