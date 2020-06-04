@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/base_margin_padding_start"
             android:layout_marginRight="@dimen/base_margin_padding_end"
+            android:textColor="@color/hrd_text_color"
             android:text="我是头哈哈哈哈哈-STYLE"/>
 
     </LinearLayout>
