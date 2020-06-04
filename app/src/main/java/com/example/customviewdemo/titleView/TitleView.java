@@ -61,7 +61,7 @@ public class TitleView extends ViewGroup {
         int        n = a.getIndexCount();
 
         setTextColor(a.getColor(R.styleable.TitleView_textColor,
-                                context.getColor(R.color.colorPrimary)));
+                                context.getColor(R.color.hrd_primary_color)));
         setTextSize((int) a.getDimension(R.styleable.TitleView_textSize,
                                          context.getResources().getDimension(
                                                  R.dimen.title_view_text_size_default)));
