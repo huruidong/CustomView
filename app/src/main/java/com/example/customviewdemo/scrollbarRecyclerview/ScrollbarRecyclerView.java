@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.example.customviewdemo.R;
-import com.example.customviewdemo.utils.DisplayUtils;
 
 public class ScrollbarRecyclerView extends RecyclerView {
 
@@ -106,7 +105,7 @@ public class ScrollbarRecyclerView extends RecyclerView {
         isNeedRefreshScaleTrack = true;
     }
 
-    private void initScaleTrackProp(Canvas canvas) {
+    private void initScaleTrack(Canvas canvas) {
 
         trackHeight = (int) (getHeight() * scrollbarScale);
 
@@ -131,35 +130,39 @@ public class ScrollbarRecyclerView extends RecyclerView {
         }
     }
 
-    //
     @Override
     public void draw(Canvas c) {
         super.draw(c);
 
         if (isUseCustomScaleScrollbar) {
             if (isNeedRefreshScaleTrack) {
-                initScaleTrackProp(c);
+                initScaleTrack(c);
             }
-
-            c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
-                            mScaleScrollbarTrackWidth / 2, mScaleScrollbarTrackWidth / 2,
-                            trackScalePaint);
-
-            int range  = computeVerticalScrollRange();
-            int offset = computeVerticalScrollOffset();
-            int extent = computeVerticalScrollExtent();
-
-            int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
-            float thumbTop    = trackbarTop + (trackHeight - thumbHeight) * 1f * (offset * 1f / (range - extent));
-            float thumbBottom = thumbTop + thumbHeight;
-            float thumbLeft = trackLeft + ((mScaleScrollbarTrackWidth - mScaleScrollbarThumbWidth) / 2);
-            float thumbRight = thumbLeft + mScaleScrollbarThumbWidth;
-
-            c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom,
-                            mScaleScrollbarThumbWidth / 2, mScaleScrollbarThumbWidth / 2,
-                            thumbScalePaint);
+            drawTrack(c);
+            drawThumb(c);
         }
+    }
 
+    private void drawThumb(Canvas c) {
+        int range  = computeVerticalScrollRange();
+        int offset = computeVerticalScrollOffset();
+        int extent = computeVerticalScrollExtent();
+
+        int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
+        float thumbTop    = trackbarTop + (trackHeight - thumbHeight) * 1f * (offset * 1f / (range - extent));
+        float thumbBottom = thumbTop + thumbHeight;
+        float thumbLeft = trackLeft + ((mScaleScrollbarTrackWidth - mScaleScrollbarThumbWidth) / 2);
+        float thumbRight = thumbLeft + mScaleScrollbarThumbWidth;
+
+        c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom,
+                        mScaleScrollbarThumbWidth / 2, mScaleScrollbarThumbWidth / 2,
+                        thumbScalePaint);
+    }
+
+    private void drawTrack(Canvas c) {
+        c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
+                        mScaleScrollbarTrackWidth / 2, mScaleScrollbarTrackWidth / 2,
+                        trackScalePaint);
     }
 
 }

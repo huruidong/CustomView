@@ -12,10 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.customviewdemo.R;
+import com.example.customviewdemo.slideLayout.SlideLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> implements ItemTouchStatus{
 
     private Context           mContext;
     private ArrayList<String> list;
@@ -40,6 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int i) {
+        myViewHolder.textlevel1.setText(list.get(i)+"--"+i);
 //        if (i == 0) {
 //            myViewHolder.textlevel1.setText("window 平移动画-无延迟");
 //        }
@@ -165,6 +168,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(list, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    @Override
+    public boolean onItemRemove(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        return true;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
