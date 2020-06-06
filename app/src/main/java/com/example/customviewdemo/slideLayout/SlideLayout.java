@@ -27,6 +27,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.support.animation.DynamicAnimation;
 import android.support.animation.FloatPropertyCompat;
 import android.support.animation.SpringAnimation;
@@ -45,21 +46,25 @@ import com.example.customviewdemo.R;
  * like SlidingPaneLayout, all direction support.
  */
 public class SlideLayout extends ViewGroup {
-    public static final int STATE_CLOSE   = 0;
+    public static final int STATE_CLOSE = 0;
     public static final int STATE_SLIDING = 1;
-    public static final int STATE_OPEN    = 2;
+    public static final int STATE_OPEN = 2;
 
     private static final int SLIDE_HORIZONTAL = 1;
-    private static final int SLIDE_VERTICAL   = 2;
+    private static final int SLIDE_VERTICAL = 2;
+    private static final int SLIDE_START = 3;
+    private static final int SLIDE_END = 4;
+    private static final int SLIDE_TOP = 5;
+    private static final int SLIDE_BOTTOM = 6;
 
     private static final int SLIDE_PRE_ACTION_DEFAULT = 0; // 无操作
-    private static final int SLIDE_PRE_ACTION_OPEN    = 1; // 预测当前操作是开启操作
-    private static final int SLIDE_PRE_ACTION_CLOSE   = -1; // 预测当前操作是关闭操作
+    private static final int SLIDE_PRE_ACTION_OPEN = 1; // 预测当前操作是开启操作
+    private static final int SLIDE_PRE_ACTION_CLOSE = -1; // 预测当前操作是关闭操作
 
     private static final long ANIM_ALPHA_DURATION_DEFAULT = 150;
 
-    private static final float VELOCITY_LIMIT_OPEN_DEFAULT   = 1000;
-    private static final float VELOCITY_LIMIT_CLOSE_DEFAULT  = 1000;
+    private static final float VELOCITY_LIMIT_OPEN_DEFAULT = 1000;
+    private static final float VELOCITY_LIMIT_CLOSE_DEFAULT = 1000;
     private static final float VELOCITY_LIMIT_DELETE_DEFAULT = 2000;
 
     private OnSlideActionListener mListener;
@@ -73,7 +78,7 @@ public class SlideLayout extends ViewGroup {
     private int mLastY = 0;
 
     private VelocityTracker mVelocityTracker;
-    private float           currVelocity = 0;
+    private float currVelocity = 0;
 
     private ObjectAnimator alphaSlideViewAnimator, alphaContentViewAnimator;
     private SpringAnimation tranXSpringAnimation, tranYSpringAnimation;
@@ -81,10 +86,10 @@ public class SlideLayout extends ViewGroup {
 
     private long alphaAnimatorDuration = ANIM_ALPHA_DURATION_DEFAULT;
 
-    private int     mSlideCriticalValue = 0;
-    private boolean mIsScrolling        = false;
-    private int     mSlideDirection;
-    private int     preNextAction       = SLIDE_PRE_ACTION_DEFAULT; // 根据上一次和当前滑动位置预测下一步操作是开启还是关闭
+    private int mSlideCriticalValue = 0;
+    private boolean mIsScrolling = false;
+    private int mSlideDirection;
+    private int preNextAction = SLIDE_PRE_ACTION_DEFAULT; // 根据上一次和当前滑动位置预测下一步操作是开启还是关闭
 
     public SlideLayout(Context context) {
         this(context, null);
@@ -122,7 +127,7 @@ public class SlideLayout extends ViewGroup {
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SlideLayout);
         mSlideDirection = typedArray.getInt(R.styleable.SlideLayout_slideDirection,
-                                            SLIDE_HORIZONTAL);
+                SLIDE_END);
         mSlideCriticalValue = typedArray.getDimensionPixelSize(
                 R.styleable.SlideLayout_slideCriticalValue, 0);
         typedArray.recycle();
@@ -148,13 +153,35 @@ public class SlideLayout extends ViewGroup {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        if (getChildCount() != 2) {
-            throw new IllegalArgumentException(
-                    "SlideLayout only need contains two child (content and slide).");
+        mSlideView = findViewById(R.id.hrd_slidelayout_slide);
+        mContentView = findViewById(R.id.hrd_slidelayout_content);
+        if ((null == mSlideView && null != mContentView) || (null == mContentView && null != mSlideView)) {
+            if (getChildCount() != 2) {
+                throw new IllegalArgumentException(
+                        "SlideLayout only need contains two child (content(R.id.hrd_slidelayout_content) and slide(R.id.hrd_slidelayout_slide)).");
+            } else {
+                if (null == mSlideView) {
+                    int mContentViewIndex = indexOfChild(mContentView);
+                    int mSlideViewIndex = 1 - mContentViewIndex;
+                    mSlideView = getChildAt(mSlideViewIndex);
+                } else if (null == mContentView) {
+                    int mSlideViewIndex = indexOfChild(mSlideView);
+                    int mContentViewIndex = 1 - mSlideViewIndex;
+                    mContentView = getChildAt(mContentViewIndex);
+                }
+            }
+        } else if (null == mSlideView && null == mContentView) {
+            if (getChildCount() != 2) {
+                throw new IllegalArgumentException(
+                        "SlideLayout only need contains two child ," +
+                                "\nrule 1:the first is slideView and the second is contentView" +
+                                "\nrule2:(content(R.id.hrd_slidelayout_content) and slide(R.id.hrd_slidelayout_slide)).");
+            } else {
+                mSlideView = getChildAt(0);
+                mContentView = getChildAt(1);
+            }
         }
-        mSlideView = getChildAt(0);
         mSlideView.setAlpha(0);
-        mContentView = getChildAt(1);
     }
 
     @Override
@@ -167,12 +194,32 @@ public class SlideLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         switch (mSlideDirection) {
-            case SLIDE_HORIZONTAL:
-                mSlideView.layout(getMeasuredWidth() - mSlideView.getMeasuredWidth(), 0,
-                                  getMeasuredWidth(), getMeasuredHeight());
+            case SLIDE_START:
+                if (isLayoutRtl()) {
+                    mSlideView.layout(getMeasuredWidth() - mSlideView.getMeasuredWidth(), 0,
+                            getMeasuredWidth(), getMeasuredHeight());
+                } else {
+                    mSlideView.layout(0, 0,
+                            mSlideView.getMeasuredWidth(), getMeasuredHeight());
+                }
                 break;
+            case SLIDE_END:
+            case SLIDE_HORIZONTAL:
+                if (isLayoutRtl()) {
+                    mSlideView.layout(0, 0,
+                            mSlideView.getMeasuredWidth(), getMeasuredHeight());
+                } else {
+
+                    mSlideView.layout(getMeasuredWidth() - mSlideView.getMeasuredWidth(), 0,
+                            getMeasuredWidth(), getMeasuredHeight());
+                }
+                break;
+            case SLIDE_TOP:
             case SLIDE_VERTICAL:
                 mSlideView.layout(0, 0, getMeasuredWidth(), mSlideView.getMeasuredHeight());
+                break;
+            case SLIDE_BOTTOM:
+                mSlideView.layout(getMeasuredHeight() - mSlideView.getMeasuredHeight(), 0, getMeasuredWidth(), getMeasuredHeight());
                 break;
         }
         mContentView.layout(0, 0, getMeasuredWidth(), getMeasuredHeight());
@@ -186,12 +233,12 @@ public class SlideLayout extends ViewGroup {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         mVelocityTracker.addMovement(event);
-        int   eventX  = (int) event.getX();
-        int   eventY  = (int) event.getY();
-        int   offsetX = eventX - mLastX;
-        int   offsetY = eventY - mLastY;
-        float scrollX = mContentView.getTranslationX();
-        float scrollY = mContentView.getTranslationX();
+        int eventX = (int) event.getX();
+        int eventY = (int) event.getY();
+        int offsetX = eventX - mLastX;
+        int offsetY = eventY - mLastY;
+        float curTranX = mContentView.getTranslationX();
+        float curTranY = mContentView.getTranslationY();
         mLastX = eventX;
         mLastY = eventY;
         switch (event.getAction()) {
@@ -200,41 +247,21 @@ public class SlideLayout extends ViewGroup {
                 super.dispatchTouchEvent(event);
                 return true;
             case MotionEvent.ACTION_MOVE:
-                if (mContentView.getTranslationX() >= 0 && offsetX > 0) {
+                // 检查在当前设置的侧滑方向上，该次滑动是否有效
+                if (checkValidMoveByDirection(offsetX, offsetY)) {
                     return false;
                 }
                 mVelocityTracker.computeCurrentVelocity(1000); //设置units的值为1000，意思为一秒时间内运动了多少个像素
                 int directionMoveOffset = 0;
-                if (mSlideDirection == SLIDE_HORIZONTAL) {
+                // 根据侧滑方向计算滑动速度、滑动距离以及预测该次滑动是开启还是关闭菜单
+                if (mSlideDirection == SLIDE_START || mSlideDirection == SLIDE_END || mSlideDirection == SLIDE_HORIZONTAL) {
                     currVelocity = mVelocityTracker.getXVelocity();
                     directionMoveOffset = Math.abs(offsetX) - Math.abs(offsetY);
-                    if (offsetX > 0) {
-                        // 从左向右滑动时→→→
-                        if (scrollX < 0) {
-                            // 如果是已经打开右侧边的情况下，则为关闭
-                            preNextAction = SLIDE_PRE_ACTION_CLOSE;
-                        } else {
-                            // 如果是默认状态或者打开左侧边的情况下，则为开启
-                            preNextAction = SLIDE_PRE_ACTION_OPEN;
-                        }
-                    } else if (offsetX < 0) {
-                        // 从右向左滑动时←←←
-                        if (scrollX <= 0) {
-                            // 如果是默认状态或者打开右侧边的情况下，则为打开
-                            preNextAction = SLIDE_PRE_ACTION_OPEN;
-                        } else {
-                            // 如果是打开左侧边的情况下，则为关闭
-                            preNextAction = SLIDE_PRE_ACTION_CLOSE;
-                        }
-                    }
-                } else {
+                    setPreNextAction(offsetX, curTranX);
+                } else if (mSlideDirection == SLIDE_TOP || mSlideDirection == SLIDE_BOTTOM || mSlideDirection == SLIDE_VERTICAL) {
                     currVelocity = mVelocityTracker.getYVelocity();
                     directionMoveOffset = Math.abs(offsetY) - Math.abs(offsetX);
-                    if (offsetY > 0) {
-                        preNextAction = SLIDE_PRE_ACTION_OPEN;
-                    } else if (offsetY < 0) {
-                        preNextAction = SLIDE_PRE_ACTION_CLOSE;
-                    }
+                    setPreNextAction(offsetY, curTranY);
                 }
                 if (!mIsScrolling && directionMoveOffset < ViewConfiguration.getTouchSlop()) {
                     break;
@@ -242,11 +269,15 @@ public class SlideLayout extends ViewGroup {
                 getParent().requestDisallowInterceptTouchEvent(true);
                 mIsScrolling = true;
                 switch (mSlideDirection) {
+                    case SLIDE_START:
+                    case SLIDE_END:
                     case SLIDE_HORIZONTAL:
-                        doHorizontalMove(offsetX, scrollX);
+                        doHorizontalMove(offsetX, curTranX);
                         break;
+                    case SLIDE_TOP:
+                    case SLIDE_BOTTOM:
                     case SLIDE_VERTICAL:
-                        doVerticalMove(offsetY, scrollY);
+                        doVerticalMove(offsetY, curTranY);
                         break;
                 }
                 break;
@@ -254,11 +285,15 @@ public class SlideLayout extends ViewGroup {
             case MotionEvent.ACTION_CANCEL:
                 mVelocityTracker.clear();
                 switch (mSlideDirection) {
+                    case SLIDE_START:
+                    case SLIDE_END:
                     case SLIDE_HORIZONTAL:
-                        doHorizontalUp(scrollX);
+                        doHorizontalUp(curTranX);
                         break;
+                    case SLIDE_TOP:
+                    case SLIDE_BOTTOM:
                     case SLIDE_VERTICAL:
-                        doVerticalUp(scrollY);
+                        doVerticalUp(curTranY);
                         break;
                 }
                 preNextAction = SLIDE_PRE_ACTION_DEFAULT;
@@ -269,32 +304,107 @@ public class SlideLayout extends ViewGroup {
         return super.dispatchTouchEvent(event);
     }
 
-    private void doVerticalUp(float scrollY) {
+    private boolean checkValidMoveByDirection(int offsetX, int offsetY) {
+        if (mSlideDirection == SLIDE_END) {
+            // 如果是从END滑出
+            if (isLayoutRtl()) {
+                // rtl布局，end为从左边滑出菜单，手势为从左向右滑动
+                if (mContentView.getTranslationX() <= 0 && offsetX < 0) {
+                    // 如果mContentView（静止或已经向左边滑动）且手指在向左边滑动，则不作处理
+                    return true;
+                }
+            } else {
+                // 正常布局，end为从右侧滑出菜单，手势为从右向左滑动
+                if (mContentView.getTranslationX() >= 0 && offsetX > 0) {
+                    // 如果mContentView（静止或已经向右边滑动）且手指在向右边滑动，则不作处理
+                    return true;
+                }
+            }
+        } else if (mSlideDirection == SLIDE_START) {
+            // 如果是从START滑出
+            if (isLayoutRtl()) {
+                // rtl布局，START为从右侧滑出菜单，手势为从右向左滑动
+                if (mContentView.getTranslationX() >= 0 && offsetX > 0) {
+                    // 如果mContentView（静止或已经向右边滑动）且手指在向右边滑动，则不作处理
+                    return true;
+                }
+            } else {
+                // 正常布局，start为左侧滑出菜单，手势为从左向右滑动
+                if (mContentView.getTranslationX() <= 0 && offsetX < 0) {
+                    // 如果mContentView（静止或已经向左边滑动）且手指在向左边滑动，则不作处理
+                    return true;
+                }
+            }
+        } else if (mSlideDirection == SLIDE_TOP) {
+            // 如果为TOP，则为上方滑出菜单，手势为从上向下滑动
+            if (mContentView.getTranslationY() <= 0 && offsetY < 0) {
+                // 如果mContentView（静止或已经向上滑动）且手指正在向上滑动，则不作处理
+                return true;
+            }
+        } else if (mSlideDirection == SLIDE_BOTTOM) {
+            // 如果为BOTTOM，则为下方滑出菜单，手势为从下向上滑动
+            if (mContentView.getTranslationY() >= 0 && offsetY > 0) {
+                // 如果mContentView（静止或已经向下滑动）且手指正在向下滑动，则不作处理
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setPreNextAction(int offset, float curTran) {
+        if (offset > 0) {
+            // 从左向右滑动时→→→ || 从上往下滑动时↓↓↓
+            if (curTran >= 0) {
+                // 如果是默认状态或者打开左侧边的情况下 || 如果是默认状态或者打开上侧菜单的情况下，则为开启
+                preNextAction = SLIDE_PRE_ACTION_OPEN;
+            } else {
+                // 如果是已经打开右侧边的情况下 || 如果是打开下侧菜单的情况下, 则为关闭
+                preNextAction = SLIDE_PRE_ACTION_CLOSE;
+            }
+        } else if (offset < 0) {
+            // 从右向左滑动时←←← || 从下往上滑动时↑↑↑
+            if (curTran <= 0) {
+                // 如果是默认状态或者打开右侧边的情况下 || 如果是默认状态或者打开下侧菜单的情况下，则为打开
+                preNextAction = SLIDE_PRE_ACTION_OPEN;
+            } else {
+                // 如果是打开左侧边的情况下 || 如果是打开上侧菜单的情况下，则为关闭
+                preNextAction = SLIDE_PRE_ACTION_CLOSE;
+            }
+        }
+    }
+
+    private void doVerticalUp(float curTranY) {
         int finalScrollY = 0;
         if (preNextAction == SLIDE_PRE_ACTION_CLOSE) {
-            if (Math.abs(scrollY) <= mSlideView.getMeasuredHeight() - getSlideCriticalValue()) {
+            // 预测当前操作为纵向关闭操作时
+            if (mSlideView.getMeasuredHeight() - Math.abs(curTranY) >= getSlideCriticalValue()) {
+                // 如果当前滑动距离大于等于临界值，则关闭
                 finalScrollY = 0;
             } else {
+                // 如果没有，则保持开启
                 finalScrollY = mSlideView.getMeasuredHeight();
             }
         } else if (preNextAction == SLIDE_PRE_ACTION_OPEN) {
-            if (Math.abs(scrollY) > getSlideCriticalValue()) {
+            // 预测当前操作为纵向开启操作时
+            if (Math.abs(curTranY) > getSlideCriticalValue()) {
+                // 如果当前滑动距离大于等于临界值，则开启
                 finalScrollY = mSlideView.getMeasuredHeight();
             } else {
+                // 如果没有，则保持关闭
                 finalScrollY = 0;
             }
         }
         doTranYAnimator(mContentView, finalScrollY, true);
     }
 
-    private void doHorizontalUp(float scrollX) {
+    private void doHorizontalUp(float curTranX) {
         int finalScrollX = 0;
-        if (scrollX < 0) {
+        if (curTranX < 0) {
             if (preNextAction == SLIDE_PRE_ACTION_CLOSE) {
                 // 右侧边滑动---关闭
                 // 滑动距离小于临界值时收起不显示，大于或等于时展开显示
                 if (Math.abs(
-                        scrollX) <= mSlideView.getMeasuredWidth() - getSlideCriticalValue() || Math.abs(currVelocity) > VELOCITY_LIMIT_CLOSE_DEFAULT) {
+                        curTranX) <= mSlideView.getMeasuredWidth() - getSlideCriticalValue() || Math.abs(currVelocity) > VELOCITY_LIMIT_CLOSE_DEFAULT) {
                     finalScrollX = 0;
                 } else {
                     finalScrollX = -mSlideView.getMeasuredWidth();
@@ -303,7 +413,7 @@ public class SlideLayout extends ViewGroup {
                 // 右侧边滑动---开启
                 // 向左滑
                 // 滑动距离小于临界值时收起不显示，大于或等于时展开显示
-                if (Math.abs(scrollX) > getSlideCriticalValue() || Math.abs(currVelocity) > VELOCITY_LIMIT_OPEN_DEFAULT) {
+                if (Math.abs(curTranX) > getSlideCriticalValue() || Math.abs(currVelocity) > VELOCITY_LIMIT_OPEN_DEFAULT) {
                     finalScrollX = -mSlideView.getMeasuredWidth();
                 } else {
                     finalScrollX = 0;
@@ -312,15 +422,15 @@ public class SlideLayout extends ViewGroup {
             }
             doSlideViewAlphaAnimator(Math.abs(
                     finalScrollX * 1f / (mSlideView.getMeasuredWidth() - getSlideCriticalValue())),
-                                     true);
-        } else if (scrollX > 0) {
+                    true);
+        } else if (curTranX > 0) {
             if (preNextAction == SLIDE_PRE_ACTION_CLOSE) {
                 // 左边滑动删除---关闭
                 finalScrollX = 0;
                 doContentViewAlphaAnimator(1, true);
             } else if (preNextAction == SLIDE_PRE_ACTION_OPEN) {
                 // 左边滑动删除---删除
-                if (scrollX > getRemoveCriticalValue() || currVelocity > 2500) {
+                if (curTranX > getRemoveCriticalValue() || currVelocity > 2500) {
                     finalScrollX = 2 * getMeasuredWidth();
                     doContentViewAlphaAnimator(0, true);
                 } else {
@@ -330,26 +440,26 @@ public class SlideLayout extends ViewGroup {
 
             }
         }
-        if(finalScrollX > 0 || (finalScrollX == 0 && preNextAction == SLIDE_PRE_ACTION_OPEN)) {
+        if (finalScrollX > 0 || (finalScrollX == 0 && preNextAction == SLIDE_PRE_ACTION_OPEN)) {
             return;
         }
         doTranXAnimator(mContentView, finalScrollX, true);
     }
 
-    private void doVerticalMove(int offsetY, float scrollY) {
-        float newScrollY = scrollY + offsetY;
+    private void doVerticalMove(int offsetY, float curTranY) {
+        float newScrollY = curTranY + offsetY;
         if (Math.abs(newScrollY) > mSlideView.getMeasuredHeight() - 1) {
             newScrollY = mSlideView.getMeasuredHeight();
         }
         doTranYAnimator(mContentView, newScrollY, false);
     }
 
-    private void doHorizontalMove(int offsetX, float scrollX) {
-        float newScrollX = scrollX + offsetX;
+    private void doHorizontalMove(int offsetX, float curTranX) {
+        float newScrollX = curTranX + offsetX;
         if (newScrollX > 0) {
             return;
         }
-        if (scrollX < 0) {
+        if (curTranX < 0) {
             if (preNextAction == SLIDE_PRE_ACTION_OPEN) {
                 if (Math.abs(newScrollX) > mSlideView.getMeasuredWidth() - 1) {
                     newScrollX = -mSlideView.getMeasuredWidth();
@@ -361,8 +471,8 @@ public class SlideLayout extends ViewGroup {
             }
             doSlideViewAlphaAnimator(0.3f + 0.7f * Math.abs(
                     newScrollX * 1f / (mSlideView.getMeasuredWidth() - getSlideCriticalValue())),
-                                     false);
-        } else if (scrollX > 0) {
+                    false);
+        } else if (curTranX > 0) {
             if (preNextAction == SLIDE_PRE_ACTION_CLOSE) {
                 if (newScrollX < 0) {
                     newScrollX = 0;
@@ -412,7 +522,7 @@ public class SlideLayout extends ViewGroup {
             finalContentViewAlpha = alpha;
             if (null == alphaContentViewAnimator) {
                 alphaContentViewAnimator = ObjectAnimator.ofFloat(mContentView, "alpha",
-                                                                  mContentView.getAlpha(), alpha);
+                        mContentView.getAlpha(), alpha);
                 alphaContentViewAnimator.setDuration(alphaAnimatorDuration);
                 alphaContentViewAnimator.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -449,7 +559,7 @@ public class SlideLayout extends ViewGroup {
             finalSlideViewAlpha = alpha;
             if (null == alphaSlideViewAnimator) {
                 alphaSlideViewAnimator = ObjectAnimator.ofFloat(mSlideView, "alpha",
-                                                                mSlideView.getAlpha(), alpha);
+                        mSlideView.getAlpha(), alpha);
                 alphaSlideViewAnimator.setDuration(alphaAnimatorDuration);
                 alphaSlideViewAnimator.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -495,7 +605,7 @@ public class SlideLayout extends ViewGroup {
                     @Override
                     public void setValue(View view, float value) {
                         Log.d("huruidong",
-                              "at ssui at com ---> setValue() getMeasuredWidth(): " + getMeasuredWidth());
+                                "at ssui at com ---> setValue() getMeasuredWidth(): " + getMeasuredWidth());
                         Log.d("huruidong", "at ssui at com ---> setValue() key: " + value);
                         view.setTranslationX(value);
                         if (value >= getMeasuredWidth()) {
@@ -564,5 +674,13 @@ public class SlideLayout extends ViewGroup {
 
     public interface OnSlideActionListener {
         void delete();
+    }
+
+    public boolean isLayoutRtl() {
+        if (Build.VERSION.SDK_INT >= 17) {
+            return View.LAYOUT_DIRECTION_RTL == this.getLayoutDirection();
+        } else {
+            return false;
+        }
     }
 }

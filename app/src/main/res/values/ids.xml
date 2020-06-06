@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="ss_numberpicker_input" type="id" />
+    <item name="hrd_slidelayout_content" type="id"/>
+    <item name="hrd_slidelayout_slide" type="id"/>
 </resources>
