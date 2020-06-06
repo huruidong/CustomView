@@ -192,18 +192,17 @@ public class SlideLayout extends ViewGroup {
         int   offsetY = eventY - mLastY;
         float scrollX = mContentView.getTranslationX();
         float scrollY = mContentView.getTranslationX();
-
+        mLastX = eventX;
+        mLastY = eventY;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mLastX = eventX;
-                mLastY = eventY;
                 mIsScrolling = false;
-                //Maybe child not set OnClickListener, so ACTION_DOWN need to return true and use super.
                 super.dispatchTouchEvent(event);
-                //                mContentView.setScaleX(1.05f);
-                //                mContentView.setScaleY(1.05f);
                 return true;
             case MotionEvent.ACTION_MOVE:
+                if (mContentView.getTranslationX() >= 0 && offsetX > 0) {
+                    return false;
+                }
                 mVelocityTracker.computeCurrentVelocity(1000); //设置units的值为1000，意思为一秒时间内运动了多少个像素
                 int directionMoveOffset = 0;
                 if (mSlideDirection == SLIDE_HORIZONTAL) {
@@ -254,7 +253,6 @@ public class SlideLayout extends ViewGroup {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 mVelocityTracker.clear();
-                mIsScrolling = false;
                 switch (mSlideDirection) {
                     case SLIDE_HORIZONTAL:
                         doHorizontalUp(scrollX);
@@ -268,8 +266,6 @@ public class SlideLayout extends ViewGroup {
                 //                mContentView.setScaleY(1f);
                 break;
         }
-        mLastX = eventX;
-        mLastY = eventY;
         return super.dispatchTouchEvent(event);
     }
 
@@ -334,6 +330,9 @@ public class SlideLayout extends ViewGroup {
 
             }
         }
+        if(finalScrollX > 0 || (finalScrollX == 0 && preNextAction == SLIDE_PRE_ACTION_OPEN)) {
+            return;
+        }
         doTranXAnimator(mContentView, finalScrollX, true);
     }
 
@@ -347,6 +346,9 @@ public class SlideLayout extends ViewGroup {
 
     private void doHorizontalMove(int offsetX, float scrollX) {
         float newScrollX = scrollX + offsetX;
+        if (newScrollX > 0) {
+            return;
+        }
         if (scrollX < 0) {
             if (preNextAction == SLIDE_PRE_ACTION_OPEN) {
                 if (Math.abs(newScrollX) > mSlideView.getMeasuredWidth() - 1) {
@@ -480,7 +482,7 @@ public class SlideLayout extends ViewGroup {
     }
 
     private void doTranXAnimator(final View view, float tranX, boolean isNeedAnimator) {
-
+        Log.d("huruidong", "at ssui at com ---> doTranXAnimator() tranX: " + tranX + " " + isNeedAnimator);
         if (isNeedAnimator) {
             if (null == tranXSpringAnimation) {
                 tranXSpringAnimation = new SpringAnimation(view, new FloatPropertyCompat<View>(
@@ -498,6 +500,7 @@ public class SlideLayout extends ViewGroup {
                         view.setTranslationX(value);
                         if (value >= getMeasuredWidth()) {
 //                            setVisibility(GONE);
+                            mIsScrolling = false;
                             if (null != mListener) {
                                 mListener.delete();
                             }
@@ -522,6 +525,7 @@ public class SlideLayout extends ViewGroup {
             view.setTranslationX(tranX);
             if (tranX >= getMeasuredWidth()) {
 //                setVisibility(GONE);
+                mIsScrolling = false;
                 if (null != mListener) {
                     mListener.delete();
                 }

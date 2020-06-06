@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.example.customviewdemo.scrollbarRecyclerview.SlideRecyclerView
+    <com.example.customviewdemo.scrollbarRecyclerview.ScrollbarRecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

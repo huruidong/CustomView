@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class ScrollbarRecyclerDemo extends BaseActivity {
 
-    SlideRecyclerView recyclerView;
+    ScrollbarRecyclerView recyclerView;
 
     private ArrayList<String> mDatas;
     private String[]          mMovieStrings = {"星球大战系列", "异次元骇客（第十三层）", "超人", "终结者（1、2）", "12猴子", "黑客帝国系列", "移魂都市（黑暗城市）", "超时空接触", "千钧一发", "2001漫游太空", "肖申克的救赎", "教父", "美国往事", "天堂电影院", "无主之城", "活着", "阿甘正传", "勇敢的心", "楚门的世界", "音乐之声", "辛德勒的名单", "星球大战系列", "异次元骇客（第十三层）", "超人", "终结者（1、2）", "12猴子", "黑客帝国系列", "移魂都市（黑暗城市）"};
