@@ -3,11 +3,14 @@ package com.example.customviewdemo.scrollbarRecyclerview;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.View;
 
 import com.example.customviewdemo.R;
 
 
 public class CustomItemTouchCallback extends ItemTouchHelper.Callback {
+
+    private int mContentViewId = R.id.hrd_slidelayout_content;
 
     private final ItemTouchStatus mItemTouchStatus;
 
@@ -15,13 +18,35 @@ public class CustomItemTouchCallback extends ItemTouchHelper.Callback {
         mItemTouchStatus = itemTouchStatus;
     }
 
+    public CustomItemTouchCallback(ItemTouchStatus itemTouchStatus, int contentViewId) {
+        mItemTouchStatus = itemTouchStatus;
+        mContentViewId = contentViewId;
+    }
+
+    public void setContentViewId(int contentViewId) {
+        this.mContentViewId = contentViewId;
+    }
+
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         // 上下拖动
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         // 左右滑动
-        Log.d("huruidong", "at ssui at com ---> getMovementFlags() key: " + viewHolder.itemView.findViewById(R.id.root).getTranslationX());
-        int swipeFlags = viewHolder.itemView.findViewById(R.id.root).getTranslationX() < 0 ? 0 : ItemTouchHelper.RIGHT/* | ItemTouchHelper.LEFT*/;
+        boolean isLayoutRtl = false;
+        if (recyclerView instanceof ScrollbarRecyclerView) {
+            isLayoutRtl = ((ScrollbarRecyclerView)recyclerView).isLayoutRtl();
+        }
+        int swipeFlags = 0;
+        View contentView = viewHolder.itemView.findViewById(mContentViewId);
+        if (null == contentView) {
+            throw new IllegalArgumentException(
+                    "Slide to delete need contentView(R.id.hrd_slidelayout_content).");
+        }
+        if (isLayoutRtl) {
+            swipeFlags = contentView.getTranslationX() > 0 ? 0 : ItemTouchHelper.LEFT;
+        } else {
+            swipeFlags = contentView.getTranslationX() < 0 ? 0 : ItemTouchHelper.RIGHT/* | ItemTouchHelper.LEFT*/;
+        }
         return makeMovementFlags(0, swipeFlags);
     }
 

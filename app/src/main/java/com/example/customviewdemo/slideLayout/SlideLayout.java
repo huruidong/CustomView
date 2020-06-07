@@ -206,6 +206,7 @@ public class SlideLayout extends ViewGroup {
             case SLIDE_END:
             case SLIDE_HORIZONTAL:
                 if (isLayoutRtl()) {
+                    Log.d("huruidong", "at ssui at com ---> onLayout() key: " + mSlideView.getMeasuredWidth());
                     mSlideView.layout(0, 0,
                             mSlideView.getMeasuredWidth(), getMeasuredHeight());
                 } else {
@@ -413,6 +414,11 @@ public class SlideLayout extends ViewGroup {
                 // 右侧边滑动---开启
                 // 向左滑
                 // 滑动距离小于临界值时收起不显示，大于或等于时展开显示
+                Log.d("huruidong", "at ssui at com ---> doHorizontalUp() "
+                        + "\ncurTranX: " + curTranX
+                        + "\ngetSlideCriticalValue: " + getSlideCriticalValue()
+                        + "\ncurrVelocity: " + currVelocity
+                );
                 if (Math.abs(curTranX) > getSlideCriticalValue() || Math.abs(currVelocity) > VELOCITY_LIMIT_OPEN_DEFAULT) {
                     finalScrollX = -mSlideView.getMeasuredWidth();
                 } else {
@@ -420,6 +426,8 @@ public class SlideLayout extends ViewGroup {
                 }
 
             }
+            Log.d("huruidong", "at ssui at com ---> doHorizontalUp() key: " + Math.abs(
+                    finalScrollX * 1f / (mSlideView.getMeasuredWidth() - getSlideCriticalValue())));
             doSlideViewAlphaAnimator(Math.abs(
                     finalScrollX * 1f / (mSlideView.getMeasuredWidth() - getSlideCriticalValue())),
                     true);
@@ -440,9 +448,6 @@ public class SlideLayout extends ViewGroup {
 
             }
         }
-        if (finalScrollX > 0 || (finalScrollX == 0 && preNextAction == SLIDE_PRE_ACTION_OPEN)) {
-            return;
-        }
         doTranXAnimator(mContentView, finalScrollX, true);
     }
 
@@ -456,12 +461,10 @@ public class SlideLayout extends ViewGroup {
 
     private void doHorizontalMove(int offsetX, float curTranX) {
         float newScrollX = curTranX + offsetX;
-        if (newScrollX > 0) {
-            return;
-        }
         if (curTranX < 0) {
             if (preNextAction == SLIDE_PRE_ACTION_OPEN) {
                 if (Math.abs(newScrollX) > mSlideView.getMeasuredWidth() - 1) {
+
                     newScrollX = -mSlideView.getMeasuredWidth();
                 }
             } else if (preNextAction == SLIDE_PRE_ACTION_CLOSE) {

@@ -189,11 +189,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ImageView    headicon;
         public TextView     textlevel1;
         public ImageView    tailicon;
-        public LinearLayout root;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            root = itemView.findViewById(R.id.root);
             headicon = itemView.findViewById(R.id.headicon);
             textlevel1 = itemView.findViewById(R.id.textlevel1);
             tailicon = itemView.findViewById(R.id.tailicon);
