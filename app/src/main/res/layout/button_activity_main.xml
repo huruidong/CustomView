@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/ss_button_bg_guide_strong"
+        android:background="@drawable/hrd_button_bg_orange"
         android:textSize="@dimen/sp_26"
         android:minHeight="@dimen/dp_54"
         android:paddingStart="@dimen/dp_27"

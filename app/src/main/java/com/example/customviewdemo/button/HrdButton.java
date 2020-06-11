@@ -14,7 +14,7 @@ public class HrdButton extends Button {
 
     private float mZoomScalePress = 0.9f;
     private int mZoomInDurationPress = 200;
-    private int mZoomOutDurationPress = 75;
+    private int mZoomOutDurationPress = 35;
 
     public HrdButton(Context context) {
         this(context, null);

@@ -11,6 +11,8 @@
         <item name="android:switchStyle">@style/AppTheme.SwitchStyle</item>
     </style>
 
+
+
     <style name="AppTheme.SwitchStyle" parent="@android:style/Widget.Material.CompoundButton.Switch">
         <item name="android:track">@drawable/hrd_switch_track_default</item>
         <item name="android:thumb">@drawable/hrd_switch_thumb_default</item>

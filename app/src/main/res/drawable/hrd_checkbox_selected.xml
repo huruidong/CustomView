@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+    <group
+        android:name="checkbox_bg">
+        <path
+            android:fillColor="#0CD912"
+            android:fillType="evenOdd"
+            android:pathData="M8,0L28,0C32.4183,-0 36,3.5817 36,8L36,28C36,32.4183 32.4183,36 28,36L8,36C3.5817,36 0,32.4183 0,28L0,8C-0,3.5817 3.5817,0 8,0Z"
+            android:strokeWidth="1"
+            android:strokeColor="#00000000" />
+    </group>
+    <group android:name="checkbox_check">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M30.7287,10.8074C31.7992,11.878 31.8061,13.6067 30.7441,14.6688L18.437,26.9759C17.3749,28.0379 15.6461,28.031 14.5756,26.9605C14.5683,26.9532 14.5664,26.9513 14.5644,26.9493L6.7893,19.1742C5.7369,18.1218 5.7369,16.4155 6.7893,15.3631C7.8417,14.3107 9.548,14.3107 10.6004,15.3631L16.448,21.211L26.8673,10.792C27.9294,9.73 29.6582,9.7369 30.7287,10.8074Z"
+            android:strokeWidth="1"
+            android:strokeColor="#00000000"
+            android:fillAlpha="1"/>
+    </group>
+</vector>

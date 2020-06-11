@@ -30,8 +30,11 @@ public class ScrollbarRecyclerDemo extends BaseActivity {
         RecyclerViewAdapter listadapter = new RecyclerViewAdapter(null, this, mDatas);
         recyclerView.setAdapter(listadapter);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new CustomItemTouchCallback(listadapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new CustomItemTouchCallback(listadapter, R.id.hrd_slidelayout_content));
         itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        ScaleScrollbar scaleScrollbar = findViewById(R.id.scrollbar);
+        scaleScrollbar.attachToRecyclerView(recyclerView);
     }
 
     private ArrayList<String> getDummyItems() {

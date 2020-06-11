@@ -1,18 +1,17 @@
-package com.example.customviewdemo.radioButton;
+package com.example.customviewdemo.checkbox;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.RadioButton;
 
 import com.example.customviewdemo.R;
 import com.example.customviewdemo.app.BaseActivity;
 
-public class RadioDemo extends BaseActivity {
+public class CheckboxDemo extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.radio_activity_main);
-        getActionBar().setTitle("单选框-RadioButton");
+        setContentView(R.layout.checkbox_activity_main);
+        getActionBar().setTitle("多选框-Checkbox");
     }
 
 }

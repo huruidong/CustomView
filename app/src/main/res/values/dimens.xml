@@ -18,6 +18,12 @@
     <dimen name="base_margin_padding_bottom">@dimen/dp_8</dimen>
 
 
+    <dimen name="hrd_scale_scrollbar_track_width_default">@dimen/dp_6</dimen>
+    <dimen name="hrd_scale_scrollbar_thumb_width_default">@dimen/dp_6</dimen>
+    <dimen name="hrd_scale_scrollbar_paddingTop_default">0dp</dimen>
+    <dimen name="hrd_scale_scrollbar_paddingEnd_default">@dimen/dp_3</dimen>
+
+
     <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_3">3dp</dimen>

@@ -22,4 +22,7 @@
     <color name="hrd_button_text_guide_strong_default">#ffffff</color>
     <color name="hrd_button_text_guide_strong_disable">#ffffff</color>
 
+    <color name="hrd_scale_scrollbar_track_color">#f00</color>
+    <color name="hrd_scale_scrollbar_thumb_color">#0f0</color>
+
 </resources>

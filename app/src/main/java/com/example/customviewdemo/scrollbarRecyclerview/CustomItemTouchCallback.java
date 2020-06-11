@@ -14,10 +14,6 @@ public class CustomItemTouchCallback extends ItemTouchHelper.Callback {
 
     private final ItemTouchStatus mItemTouchStatus;
 
-    public CustomItemTouchCallback(ItemTouchStatus itemTouchStatus) {
-        mItemTouchStatus = itemTouchStatus;
-    }
-
     public CustomItemTouchCallback(ItemTouchStatus itemTouchStatus, int contentViewId) {
         mItemTouchStatus = itemTouchStatus;
         mContentViewId = contentViewId;

@@ -2,16 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<!--    <com.example.customviewdemo.titleView.TitleView-->
+<!--        app:icon="@drawable/icon_back"-->
+<!--        app:text="通知管理"-->
+<!--        app:textColor="@android:color/white"-->
+<!--        app:textSize="26sp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingTop="8dp"-->
+<!--        android:paddingBottom="8dp"/>-->
+
     <com.example.customviewdemo.titleView.TitleView
-        app:icon="@drawable/wear_back"
+        app:icon="@drawable/icon_back"
         app:text="通知管理"
         app:textColor="@android:color/white"
         app:textSize="26sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
+        app:customView="@layout/launcher_item"
         android:paddingBottom="8dp"/>
         <!--        app:customView="@layout/common_list_item_type_single_line"-->
 </LinearLayout>
