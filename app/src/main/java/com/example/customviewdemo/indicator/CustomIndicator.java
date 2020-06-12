@@ -499,11 +499,22 @@ public class CustomIndicator extends View {
 
                 normalPointPaint.setColor(normalPointColor);
                 if (i == targetPagePosition) {
-                    int tempAlpha = (int) (255 * (1 - translationFactor * 2));
-                    tempAlpha = tempAlpha < 0 ? 0 : tempAlpha;
-                    normalPointPaint.setAlpha(tempAlpha);
-                }
-                canvas.drawPath(arcPath, normalPointPaint);
+                    //                    int tempAlpha = 0;
+                    //                    if (translationFactor <= 0.25) {
+                    //                        tempAlpha = (int) (255 * (1 - translationFactor * 4));
+                    //                        tempAlpha = tempAlpha < 0 ? 0 : tempAlpha;
+                    //                    } else {
+                    //                        tempAlpha = 255;
+                    float tempPrecent = translationFactor * 2;
+                    tempPrecent = translationFactor * 2 > 1 ? 1 : tempPrecent;
+                    normalPointPaint.setColor(
+                            getColorChanges(normalPointColor, selectedPointColor, tempPrecent));
+                    //                    }
+                    //                    Log.d("huruidong",
+                    //                          "at ssui at com ---> drawSplitTypeIndicator() key: " + translationFactor + " " + tempAlpha);
+
+                    //                    normalPointPaint.setAlpha(tempAlpha);
+                } canvas.drawPath(arcPath, normalPointPaint);
 
                 if (i == currentPagePosition) {
                     float stretchFactor = selectedSplitPointRadius / normalPointRadius;
@@ -521,6 +532,17 @@ public class CustomIndicator extends View {
                 }
             }
         }
+    }
+
+    private int getColorChanges(int cl1, int cl2, float precent) {
+        int R, G, B;
+        // 颜色的渐变，应该把分别获取对应的三基色，然后分别进行求差值；这样颜色渐变效果最佳
+        R = (int) (Color.red(cl1) + (Color.red(cl2) - Color.red(cl1)) * precent);
+        G = (int) (Color.green(cl1) + (Color.green(cl2) - Color.green(cl1)) * precent);
+        B = (int) (Color.blue(cl1) + (Color.blue(cl2) - Color.blue(cl1)) * precent);
+
+        int cl = Color.rgb(R, G, B);
+        return cl;
     }
 
     // 动态调用该方法，获取分裂效果贝塞尔曲线偏移量

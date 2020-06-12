@@ -24,18 +24,4 @@
         app:selectedPointColor="#cdcdcd"
         app:selectedPointRadius="7.5dp" />
 
-    <com.example.customviewdemo.indicator.CustomIndicator
-        android:id="@+id/CustomIndicator3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="43dp"
-        app:indicatorType="gradual"
-        app:normalPointColor="#333"
-        app:normalPointRadius="5dp"
-        app:pointInterval="15dp"
-        app:selectedPointColor="#cdcdcd"
-        app:selectedPointRadius="7.5dp" />
-
 </RelativeLayout>
