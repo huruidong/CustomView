@@ -8,12 +8,14 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Button;
 
+import com.example.customviewdemo.common.EaseCubicInterpolator;
+
 public class HrdButton extends Button {
 
     private ObjectAnimator zoomInXAnimator, zoomInYAnimator, zoomOutXAnimator, zoomOutYAnimator;
 
-    private float mZoomScalePress = 0.9f;
-    private int mZoomInDurationPress = 200;
+    private float mZoomScalePress = 0.95f;
+    private int mZoomInDurationPress = 150;
     private int mZoomOutDurationPress = 35;
 
     public HrdButton(Context context) {
