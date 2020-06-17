@@ -6,7 +6,7 @@
 
     <com.example.customviewdemo.scrollbarRecyclerview.ScrollbarRecyclerView
         android:id="@+id/list"
-        android:paddingTop="@dimen/dp_200"
+        android:layout_marginTop="@dimen/dp_200"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         hrd:scaleScrollbarTrackColor="@color/hrd_primary_color"

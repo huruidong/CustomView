@@ -6,6 +6,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.example.customviewdemo.R;
 import com.example.customviewdemo.app.BaseActivity;
+import com.example.customviewdemo.pinnerGroupTitle.PinnerItemDecoration;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,21 @@ public class ScrollbarRecyclerDemo extends BaseActivity {
         mDatas = getDummyItems();
         RecyclerViewAdapter listadapter = new RecyclerViewAdapter(null, this, mDatas);
         recyclerView.setAdapter(listadapter);
+
+        recyclerView.addItemDecoration(new PinnerItemDecoration(ScrollbarRecyclerDemo.this,
+                                                                new PinnerItemDecoration.GroupCallBack() {
+                                                                       @Override
+                                                                       public int getGroupHeight() {
+                                                                           return 72;
+                                                                       }
+
+                                                                       @Override
+                                                                       public String getGroupText(int position) {
+                                                                           return PinnerItemDecoration.getFirstLetter(
+                                                                                   mDatas.get(
+                                                                                           position));
+                                                                       }
+                                                                   }));
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new CustomItemTouchCallback(listadapter, R.id.hrd_slidelayout_content));
         itemTouchHelper.attachToRecyclerView(recyclerView);

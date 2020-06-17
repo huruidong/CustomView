@@ -245,12 +245,11 @@ public class SlideLayout extends ViewGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mIsScrolling = false;
-                super.dispatchTouchEvent(event);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 // 检查在当前设置的侧滑方向上，该次滑动是否有效
                 if (checkValidMoveByDirection(offsetX, offsetY)) {
-                    return false;
+                    return super.dispatchTouchEvent(event);
                 }
                 mVelocityTracker.computeCurrentVelocity(1000); //设置units的值为1000，意思为一秒时间内运动了多少个像素
                 int directionMoveOffset = 0;
