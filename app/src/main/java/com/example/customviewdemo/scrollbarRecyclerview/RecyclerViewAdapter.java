@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.customviewdemo.R;
 import com.example.customviewdemo.slideLayout.SlideLayout;
@@ -43,6 +44,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int i) {
         myViewHolder.textlevel1.setText(list.get(i)+"--"+i);
+        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, list.get(i)+"--"+i, Toast.LENGTH_LONG).show();
+            }
+        });
 //        if (i == 0) {
 //            myViewHolder.textlevel1.setText("window 平移动画-无延迟");
 //        }

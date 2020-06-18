@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.example.customviewdemo.slideLayout.SlideLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/hrd_slidelayout_slide"
         android:layout_width="@dimen/dp_100"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@android:color/holo_red_light"
         android:gravity="center"
         android:text="删除"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"/>
 
     <LinearLayout
         android:id="@+id/hrd_slidelayout_content"
@@ -68,4 +69,5 @@
             android:background="@android:color/holo_orange_light"/>
 
     </LinearLayout>
-</com.example.customviewdemo.slideLayout.SlideLayout>
+
+</RelativeLayout>

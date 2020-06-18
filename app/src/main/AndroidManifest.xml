@@ -37,6 +37,8 @@
 
         <activity android:name=".indicator.IndicatorDemo"
             android:theme="@style/Theme.AppCompat.Light"/>
+
+        <activity android:name=".slideRecyclerview.SlideRecyclerviewDemo"/>
     </application>
 
 </manifest>
