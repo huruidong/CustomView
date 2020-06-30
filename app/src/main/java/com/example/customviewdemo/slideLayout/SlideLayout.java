@@ -680,7 +680,7 @@ public class SlideLayout extends ViewGroup {
 
     public boolean isLayoutRtl() {
         if (Build.VERSION.SDK_INT >= 17) {
-            return View.LAYOUT_DIRECTION_RTL == this.getLayoutDirection();
+            return View.LAYOUT_DIRECTION_RTL == getResources().getConfiguration().getLayoutDirection();
         } else {
             return false;
         }

@@ -7,8 +7,11 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.customviewdemo.R;
@@ -22,9 +25,9 @@ public class ScrollbarRecyclerView extends RecyclerView {
 
     private int scrollbarPosition = SCROLLBAR_POSITION_MIDDLE;
 
-    private float mScaleScrollbarTrackWidth     = getResources().getDimension(
+    private float mScaleScrollbarTrackWidth        = getResources().getDimension(
             R.dimen.hrd_scale_scrollbar_track_width_default);
-    private float mScaleScrollbarThumbWidth     = getResources().getDimension(
+    private float mScaleScrollbarThumbWidth        = getResources().getDimension(
             R.dimen.hrd_scale_scrollbar_thumb_width_default);
     private float mScaleScrollbarDefaultPaddingTop = getResources().getDimension(
             R.dimen.hrd_scale_scrollbar_paddingTop_default);
@@ -84,13 +87,15 @@ public class ScrollbarRecyclerView extends RecyclerView {
                 a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarThumbWidth,
                                getResources().getDimension(
                                        R.dimen.hrd_scale_scrollbar_thumb_width_default)));
-        setScaleScrollbarPadding(a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarPaddingTop,
-                                                getResources().getDimension(
-                                                        R.dimen.hrd_scale_scrollbar_paddingTop_default)),
-                                 a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarPaddingEnd,
-                                                getResources().getDimension(
-                                                        R.dimen.hrd_scale_scrollbar_paddingEnd_default)));
-        setScrollbarPosition(a.getInt(R.styleable.HrdRecyclerview_scaleScrollbarPosition, SCROLLBAR_POSITION_MIDDLE));
+        setScaleScrollbarPadding(
+                a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarPaddingTop,
+                               getResources().getDimension(
+                                       R.dimen.hrd_scale_scrollbar_paddingTop_default)),
+                a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarPaddingEnd,
+                               getResources().getDimension(
+                                       R.dimen.hrd_scale_scrollbar_paddingEnd_default)));
+        setScrollbarPosition(a.getInt(R.styleable.HrdRecyclerview_scaleScrollbarPosition,
+                                      SCROLLBAR_POSITION_MIDDLE));
         a.recycle();
     }
 
@@ -156,11 +161,14 @@ public class ScrollbarRecyclerView extends RecyclerView {
 
     private void initScaleTrack(Canvas canvas) {
 
+        int[] location = new  int[2] ;
+        getLocationInWindow(location); //获取在当前窗口内的绝对坐标
+
         trackHeight = (int) (getHeight() * scrollbarScale);
         if (scrollbarPosition == SCROLLBAR_POSITION_TOP) {
-            trackbarTop = getPaddingTop() + mScaleScrollbarDefaultPaddingTop;
+            trackbarTop = location[1] + mScaleScrollbarDefaultPaddingTop;
         } else {
-            trackbarTop = (getPaddingTop() + getHeight() - trackHeight) / 2 + mScaleScrollbarDefaultPaddingTop;
+            trackbarTop = (location[1] + getHeight() - trackHeight) / 2 + mScaleScrollbarDefaultPaddingTop;
         }
         trackBottom = trackbarTop + trackHeight;
 
@@ -172,11 +180,12 @@ public class ScrollbarRecyclerView extends RecyclerView {
         trackRight = trackLeft + mScaleScrollbarTrackWidth;
 
         isNeedRefreshScaleTrack = false;
+        Log.d("huruidong", "at ssui at com ---> initScaleTrack() t: " + trackbarTop + "  l: " + trackLeft);
     }
 
     public boolean isLayoutRtl() {
         if (Build.VERSION.SDK_INT >= 17) {
-            return View.LAYOUT_DIRECTION_RTL == this.getLayoutDirection();
+            return View.LAYOUT_DIRECTION_RTL == getResources().getConfiguration().getLayoutDirection();
         } else {
             return false;
         }
@@ -185,7 +194,9 @@ public class ScrollbarRecyclerView extends RecyclerView {
     @Override
     public void draw(Canvas c) {
         super.draw(c);
-
+        if (computeVerticalScrollExtent() >= computeVerticalScrollRange()) {
+            return;
+        }
         if (isNeedScaleScrollbar) {
             if (isNeedRefreshScaleTrack) {
                 initScaleTrack(c);
@@ -214,6 +225,44 @@ public class ScrollbarRecyclerView extends RecyclerView {
         c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
                         mScaleScrollbarTrackWidth / 2, mScaleScrollbarTrackWidth / 2,
                         trackScalePaint);
+        Log.d("huruidong", "at ssui at com ---> drawTrack() trackbarTop: " + trackbarTop + "  trackLeft: " + trackLeft);
     }
+
+    private float lastX = 0, lastY = 0;
+
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent e) {
+//        float curX = e.getRawX();
+//        float curY = e.getRawY();
+//        float offsetX = curX - lastX;
+//        float offsetY = curY - lastY;
+////        Log.d("huruidong", "at ssui at com ---> onTouchEvent() curY: " + curY + "  lastY: " + lastY);
+//        switch (e.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+////                Log.d("huruidong", "at ssui at com ---> onTouchEvent() key: " + "ACTION_DOWN");
+//                lastX = curX;
+//                lastY = curY;
+//                return true;
+//            case MotionEvent.ACTION_MOVE:
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
+//
+////                Log.d("huruidong", "at ssui at com ---> onTouchEvent() offsetY: " + offsetY);
+//                if (((offsetY > 0f || getTranslationY() != 0) && layoutManager.findFirstCompletelyVisibleItemPosition() == 0)
+//                || ((offsetY < 0 || getTranslationY() != 0) && layoutManager.findLastCompletelyVisibleItemPosition() == (getAdapter().getItemCount() -1))) {
+//                    setTranslationY(offsetY);
+//
+////                    layoutManager.scrollToPositionWithOffset(10, (int) offsetY);
+//                    return true;
+//                }
+//
+//            case MotionEvent.ACTION_UP:
+////                Log.d("huruidong", "at ssui at com ---> onTouchEvent() key: " + "ACTION_UP");
+//                setTranslationY(0);
+//                break;
+//
+//        } return super.onTouchEvent(e);
+//    }
+
 
 }

@@ -4,9 +4,12 @@
     android:layout_height="wrap_content"
     xmlns:hrd="http://schemas.android.com/apk/res-auto">
 
+<!--    <com.example.customviewdemo.scrollbarRecyclerview.OverScrollLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
     <com.example.customviewdemo.scrollbarRecyclerview.ScrollbarRecyclerView
         android:id="@+id/list"
-        android:layout_marginTop="@dimen/dp_200"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         hrd:scaleScrollbarTrackColor="@color/hrd_primary_color"
@@ -18,9 +21,10 @@
         hrd:scaleScrollbarPaddingTop="30dp"
         hrd:needScaleScrollbar="false"
         hrd:scaleScrollbarPosition="top"/>
-
+<!--    </com.example.customviewdemo.scrollbarRecyclerview.OverScrollLayout>-->
     <com.example.customviewdemo.scrollbarRecyclerview.ScaleScrollbar
         android:id="@+id/scrollbar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        hrd:scaleScrollbarArc="false"/>
 </LinearLayout>

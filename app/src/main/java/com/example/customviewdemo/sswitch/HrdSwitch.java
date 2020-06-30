@@ -872,7 +872,7 @@ public class HrdSwitch extends CompoundButton {
      */
     @Override
     public void onPopulateAccessibilityEventInternal(AccessibilityEvent event) {
-        super.onPopulateAccessibilityEventInternal(event);
+//        super.onPopulateAccessibilityEventInternal(event);
 
         final CharSequence text = isChecked() ? mTextOn : mTextOff;
         if (text != null) {
@@ -1431,7 +1431,7 @@ public class HrdSwitch extends CompoundButton {
      */
     @Override
     public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info) {
-        super.onInitializeAccessibilityNodeInfoInternal(info);
+//        super.onInitializeAccessibilityNodeInfoInternal(info);
         CharSequence switchText = isChecked() ? mTextOn : mTextOff;
         if (!TextUtils.isEmpty(switchText)) {
             CharSequence oldText = info.getText();

@@ -14,20 +14,20 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-<!--            <com.example.customviewdemo.seekbar.VerticalHeterotypeSeekBar-->
-<!--                android:id="@+id/bar_kk1"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="200dp"-->
-<!--                android:layout_marginLeft="60dp"-->
-<!--                android:max="100"-->
-<!--                android:paddingStart="0dp"-->
-<!--                android:paddingEnd="2px"-->
-<!--                android:progress="0"-->
-<!--                android:progressDrawable="@drawable/seekbar_bg"-->
-<!--                android:splitTrack="false"-->
-<!--                android:thumb="@drawable/seekbar_thumb"-->
+            <com.example.customviewdemo.seekbar.VerticalHeterotypeSeekBar
+                android:id="@+id/bar_kk1"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_marginLeft="60dp"
+                android:max="100"
+                android:paddingStart="0dp"
+                android:paddingEnd="2px"
+                android:progress="0"
+                android:progressDrawable="@drawable/seekbar_bg"
+                android:splitTrack="false"
+                android:thumb="@drawable/seekbar_thumb"
 
-<!--                />-->
+                />
 
             <com.example.customviewdemo.seekbar.HrdVerticalSeekBar
                 android:id="@+id/bar_kk2"
@@ -36,6 +36,8 @@
                 android:layout_marginLeft="60dp"
                 android:max="100"
                 android:progress="0"
+                android:progressDrawable="@drawable/seekbar_bg"
+                android:thumb="@null"
                 android:progressBackgroundTint="#ff0000"
                 android:progressTint="#00ff00"/>
         </LinearLayout>

@@ -3,7 +3,11 @@ package com.example.customviewdemo.scrollbarRecyclerview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +22,6 @@ import com.example.customviewdemo.R;
 public class ScaleScrollbar extends View {
 
     private RecyclerView attchRecyclerView;
-    private ListView attchListView;
 
     private static final int SCROLLBAR_POSITION_TOP    = 1;
     private static final int SCROLLBAR_POSITION_MIDDLE = 2;
@@ -41,7 +44,7 @@ public class ScaleScrollbar extends View {
     private int mScaleScrollbarThumbColor = getResources().getColor(
             R.color.hrd_scale_scrollbar_thumb_color);
 
-    private Paint thumbScalePaint, trackScalePaint;
+    private Paint thumbScalePaint, trackScalePaint, thumbArcScalePaint, trackArcScalePaint;
 
     private boolean isUseScaleScrollbar     = true;
     private boolean isNeedRefreshScaleTrack = true;
@@ -49,6 +52,13 @@ public class ScaleScrollbar extends View {
     private int   trackHeight;
     private float trackLeft, trackbarTop, trackRight, trackBottom;
     private float scrollbarScale = SCROLLBAR_SCALE_DEFAULT;
+
+    private boolean isArc = false;
+    private float trackArcRadius;
+    private int   trackStartAngle, trackSweepAngle;
+    private float trackArcLeft, trackArcTop, trackArcRight, trackArcBottom;
+
+    private int screenWidth, screenHeight;
 
     public ScaleScrollbar(@NonNull Context context) {
         this(context, null);
@@ -60,6 +70,8 @@ public class ScaleScrollbar extends View {
 
     public ScaleScrollbar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        screenWidth = getResources().getDisplayMetrics().widthPixels;
+        screenHeight = getResources().getDisplayMetrics().heightPixels;
         initAttr(context, attrs);
         if (isUseScaleScrollbar) {
             initScaleScrollbarPaint();
@@ -80,6 +92,7 @@ public class ScaleScrollbar extends View {
                                                        R.color.hrd_scale_scrollbar_thumb_color)));
         setScrollbarScale(
                 a.getFloat(R.styleable.HrdRecyclerview_scrollbarScale, SCROLLBAR_SCALE_DEFAULT));
+        setArc(a.getBoolean(R.styleable.HrdRecyclerview_scaleScrollbarArc, false));
         setUseScaleScrollbar(a.getBoolean(R.styleable.HrdRecyclerview_needScaleScrollbar, true));
         setScaleScrollbarTrackWidth(
                 a.getDimension(R.styleable.HrdRecyclerview_scaleScrollbarTrackWidth,
@@ -110,30 +123,41 @@ public class ScaleScrollbar extends View {
         trackScalePaint.setAntiAlias(true);
         trackScalePaint.setColor(mScaleScrollbarTrackColor);
 
+        trackArcScalePaint = new Paint();
+        trackArcScalePaint.setAntiAlias(true);
+        trackArcScalePaint.setColor(mScaleScrollbarTrackColor);
+        trackArcScalePaint.setStyle(Paint.Style.STROKE);
+        trackArcScalePaint.setStrokeWidth(mScaleScrollbarTrackWidth);
+        trackArcScalePaint.setStrokeCap(Paint.Cap.ROUND);
+
         thumbScalePaint = new Paint();
         thumbScalePaint.setColor(mScaleScrollbarThumbColor);
         thumbScalePaint.setAntiAlias(true);
 
+        thumbArcScalePaint = new Paint();
+        thumbArcScalePaint.setAntiAlias(true);
+        thumbArcScalePaint.setColor(mScaleScrollbarThumbColor);
+        thumbArcScalePaint.setStyle(Paint.Style.STROKE);
+        thumbArcScalePaint.setStrokeWidth(mScaleScrollbarThumbWidth);
+        thumbArcScalePaint.setStrokeCap(Paint.Cap.ROUND);
+
     }
 
     public void attachToRecyclerView(RecyclerView attchView) {
-        if (null != attchListView) {
-            throw new IllegalArgumentException(
-                    "ScaleScrollbar can only have one attchView");
-        }
         this.attchRecyclerView = attchView;
+        attchRecyclerView.setOnScrollChangeListener(new OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                invalidate();
+            }
+        });
         initScaleTrack();
         invalidate();
     }
 
-    public void attachToListView(ListView attchView) {
-        if (null != attchRecyclerView) {
-            throw new IllegalArgumentException(
-                    "ScaleScrollbar can only have one attchView");
-        }
-        this.attchListView = attchView;
-        initScaleTrack();
-        invalidate();
+    public void setArc(boolean arc) {
+        isArc = arc;
+        isNeedRefreshScaleTrack = true;
     }
 
     public void setScrollbarPosition(int scrollbarPosition) {
@@ -182,55 +206,43 @@ public class ScaleScrollbar extends View {
     }
 
     private void initScaleTrack() {
-        if (null == attchListView && null == attchRecyclerView) {
-            throw new IllegalArgumentException(
-                    "ScaleScrollbar must have one attchView");
+        if (null == attchRecyclerView) {
+            throw new IllegalArgumentException("ScaleScrollbar must have one attchView");
         }
-        View attchView = null == attchListView ? attchRecyclerView : attchListView;
-        int attchViewHeight = unDisplayViewSize(attchView)[1];
-        trackHeight = (int) (attchViewHeight * scrollbarScale);
-        if (scrollbarPosition == SCROLLBAR_POSITION_TOP) {
-            trackbarTop = attchView.getPaddingTop() + mScaleScrollbarDefaultPaddingTop;
-        } else {
-            trackbarTop = (attchView.getPaddingTop() + attchViewHeight - trackHeight) / 2 + mScaleScrollbarDefaultPaddingTop;
-        }
-        trackBottom = trackbarTop + trackHeight;
 
-        if (isLayoutRtl()) {
-            trackLeft = attchView.getPaddingStart() + mScaleScrollbarDefaultPaddingEnd;
-        } else {
-            trackLeft = (attchView.getWidth() - attchView.getPaddingEnd() - mScaleScrollbarTrackWidth - mScaleScrollbarDefaultPaddingEnd);
-        }
-        trackRight = trackLeft + mScaleScrollbarTrackWidth;
-        Log.d("huruidong", "at ssui at com ---> initScaleTrack() "
-                + "\ngetMeasuredHeight: " + attchViewHeight
-                + "\ngetMeasuredHeight: " + attchView.getMeasuredHeight()
-                + "\ngetMeasuredHeight: " + attchView.getHeight()
-                + "\ntrackHeight: " + trackHeight
-                + "\ntrackbarTop: " + trackbarTop
-                + "\ntrackBottom: " + trackBottom
-                + "\ntrackLeft: " + trackLeft
-                + "\ntrackRight: " + trackRight
-        );
+        if (isArc) {
+            trackArcRadius = Math.min(screenHeight, screenWidth) / 2f;
+            Log.d("huruidong", "at ssui at com ---> initScaleTrack() isLayoutRtl(): " + isLayoutRtl());
+            trackStartAngle = isLayoutRtl() ? ((int) (180 * (1 - scrollbarScale) / 2) + 90) : ((int) (180 * (1 - scrollbarScale) / 2) - 90);
+            trackSweepAngle = (int) (180 * scrollbarScale);
 
+            trackArcLeft = isLayoutRtl() ?(0f+mScaleScrollbarDefaultPaddingEnd): (0f - mScaleScrollbarDefaultPaddingEnd);
+            trackArcTop = 0f + mScaleScrollbarDefaultPaddingTop;
+            trackArcRight = trackArcLeft + trackArcRadius * 2f;
+            trackArcBottom = trackArcTop + trackArcRadius * 2f;
+        } else {
+            View attchView       = attchRecyclerView;
+            trackHeight = (int) (screenHeight * scrollbarScale);
+            if (scrollbarPosition == SCROLLBAR_POSITION_TOP) {
+                trackbarTop = attchView.getPaddingTop() + mScaleScrollbarDefaultPaddingTop;
+            } else {
+                trackbarTop = (screenHeight - trackHeight) / 2 + mScaleScrollbarDefaultPaddingTop;
+            }
+            trackBottom = trackbarTop + trackHeight;
+
+            if (isLayoutRtl()) {
+                trackLeft = attchView.getPaddingStart() + mScaleScrollbarDefaultPaddingEnd;
+            } else {
+                trackLeft = (screenWidth - attchView.getPaddingEnd() - mScaleScrollbarTrackWidth - mScaleScrollbarDefaultPaddingEnd);
+            }
+            trackRight = trackLeft + mScaleScrollbarTrackWidth;
+        }
         isNeedRefreshScaleTrack = false;
-    }
-
-    public int[] unDisplayViewSize(View view) {
-        int size[] = new int[2];
-        int width = View.MeasureSpec.makeMeasureSpec(0,
-                                                     View.MeasureSpec.UNSPECIFIED);
-        int height = View.MeasureSpec.makeMeasureSpec(0,
-                                                      View.MeasureSpec.UNSPECIFIED);
-        view.measure(width, height);
-        size[0] = view.getMeasuredWidth();
-        size[1] = view.getMeasuredHeight();
-        return size;
     }
 
     public boolean isLayoutRtl() {
         if (Build.VERSION.SDK_INT >= 17) {
-            return View.LAYOUT_DIRECTION_RTL == this.getLayoutDirection();
+            return View.LAYOUT_DIRECTION_RTL == getResources().getConfiguration().getLayoutDirection();
         } else {
             return false;
         }
@@ -239,13 +251,13 @@ public class ScaleScrollbar extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension((int) mScaleScrollbarTrackWidth, trackHeight);
+        setMeasuredDimension(screenWidth, screenHeight);
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 
-        super.onLayout(changed, (int)trackLeft, (int)trackbarTop, (int)trackRight, (int)trackBottom);
+    @Override
+    public void layout(int l, int t, int r, int b) {
+        super.layout(0, 0, screenWidth, screenHeight);
     }
 
     @Override
@@ -256,21 +268,25 @@ public class ScaleScrollbar extends View {
             if (isNeedRefreshScaleTrack) {
                 initScaleTrack();
             }
-            drawTrack(c);
-            drawThumb(c);
+            if (isArc) {
+                drawArcTrack(c);
+                drawArcThumb(c);
+            } else {
+                drawTrack(c);
+                drawThumb(c);
+            }
         }
     }
 
     private void drawThumb(Canvas c) {
 
-        if (null == attchListView && null == attchRecyclerView) {
-            throw new IllegalArgumentException(
-                    "ScaleScrollbar must have one attchView");
+        if (null == attchRecyclerView) {
+            throw new IllegalArgumentException("ScaleScrollbar must have one attchView");
         }
 
-        int range  =/* null == attchListView ? */attchRecyclerView.computeVerticalScrollRange()/* : attchListView.computeVerticalScrollRange()*/;
-        int offset =/* null == attchListView ? */attchRecyclerView.computeVerticalScrollOffset()/* : attchListView.computeVerticalScrollOffset()*/;
-        int extent =/* null == attchListView ? */attchRecyclerView.computeVerticalScrollExtent()/* : attchListView.computeVerticalScrollExtent()*/;
+        int range  = attchRecyclerView.computeVerticalScrollRange();
+        int offset = attchRecyclerView.computeVerticalScrollOffset();
+        int extent = attchRecyclerView.computeVerticalScrollExtent();
 
         int   thumbHeight = (int) ((extent * 1f / range) * trackHeight);
         float thumbTop    = trackbarTop + (trackHeight - thumbHeight) * 1f * (offset * 1f / (range - extent));
@@ -280,12 +296,41 @@ public class ScaleScrollbar extends View {
 
         c.drawRoundRect(thumbLeft, thumbTop, thumbRight, thumbBottom, mScaleScrollbarThumbWidth / 2,
                         mScaleScrollbarThumbWidth / 2, thumbScalePaint);
+
     }
 
     private void drawTrack(Canvas c) {
         c.drawRoundRect(trackLeft, trackbarTop, trackRight, trackBottom,
                         mScaleScrollbarTrackWidth / 2, mScaleScrollbarTrackWidth / 2,
                         trackScalePaint);
+    }
+
+    private void drawArcThumb(Canvas c) {
+
+        if (null == attchRecyclerView) {
+            throw new IllegalArgumentException("ScaleScrollbar must have one attchView");
+        }
+
+        int range  = attchRecyclerView.computeVerticalScrollRange();
+        int offset = attchRecyclerView.computeVerticalScrollOffset();
+        int extent = attchRecyclerView.computeVerticalScrollExtent();
+
+        float thumbArcLeft   = trackArcLeft;
+        float thumbArcTop    = trackArcTop;
+        float thumbArcRight  = trackArcRight;
+        float thumbArcBottom = trackArcBottom;
+
+        int thumbSweepAngle = (int) ((extent * 1f / range) * trackSweepAngle);
+        int thumbStartAngle = isLayoutRtl() ?  ((int) (trackStartAngle + (trackSweepAngle - thumbSweepAngle) * 1f * (1f - (offset * 1f / (range - extent)))))
+                :((int) (trackStartAngle + (trackSweepAngle - thumbSweepAngle) * 1f * (offset * 1f / (range - extent))));
+        c.drawArc(thumbArcLeft, thumbArcTop, thumbArcRight, thumbArcBottom, thumbStartAngle,
+                  thumbSweepAngle, false, thumbArcScalePaint);
+    }
+
+    private void drawArcTrack(Canvas c) {
+        c.drawArc(trackArcLeft, trackArcTop, trackArcRight, trackArcBottom, trackStartAngle,
+                  trackSweepAngle, false, trackArcScalePaint);
+
     }
 
 }
