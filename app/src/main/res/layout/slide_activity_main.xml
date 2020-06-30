@@ -25,6 +25,7 @@
                 android:textColor="@android:color/white" />
 
             <TextView
+                android:id="@+id/text1"
                 android:layout_width="@dimen/dp_100"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/hrd_radio_selected"
@@ -39,7 +40,7 @@
             android:layout_height="@dimen/dp_150"
             android:background="@android:color/holo_blue_dark"
             android:gravity="center"
-            android:text="我是从左滑SlideLayout" />
+            android:text="我是从右滑SlideLayout" />
 
     </com.example.customviewdemo.slideLayout.SlideLayout>
 
@@ -63,6 +64,7 @@
             android:textColor="@android:color/white" />
 
         <TextView
+            android:id="@+id/text2"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_150"
             android:background="@android:color/holo_blue_dark"
@@ -76,27 +78,64 @@
         android:layout_height="3dp"
         android:background="@android:color/holo_orange_light" />
 
-    <com.example.customviewdemo.slideLayout.SlideLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:slideDirection="top">
+        android:layout_height="300dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="@dimen/dp_200"
-            android:layout_height="wrap_content"
-            android:drawableTop="@drawable/hrd_radio_selected"
-            android:drawablePadding="@dimen/dp_8"
-            android:gravity="center"
-            android:text="删除"
-            android:textColor="@android:color/white" />
+        <com.example.customviewdemo.slideLayout.SlideLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            app:slideDirection="top">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_150"
-            android:background="@android:color/holo_blue_dark"
-            android:gravity="center"
-            android:text="我是从左滑SlideLayout" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:gravity="center"
+                android:text="删除"
+                android:drawableTop="@drawable/hrd_radio_selected"
+                android:drawablePadding="@dimen/dp_8"
+                android:textColor="@android:color/white" />
 
-    </com.example.customviewdemo.slideLayout.SlideLayout>
+            <TextView
+                android:id="@+id/text3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_blue_dark"
+                android:gravity="center"
+                android:text="我是从上滑SlideLayout" />
 
+        </com.example.customviewdemo.slideLayout.SlideLayout>
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_orange_light" />
+
+        <com.example.customviewdemo.slideLayout.SlideLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            app:slideDirection="bottom">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:drawableTop="@drawable/hrd_radio_selected"
+                android:drawablePadding="@dimen/dp_8"
+                android:gravity="center"
+                android:text="删除"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/text4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_blue_dark"
+                android:gravity="center"
+                android:text="我是从下滑SlideLayout" />
+
+        </com.example.customviewdemo.slideLayout.SlideLayout>
+    </LinearLayout>
 </LinearLayout>
