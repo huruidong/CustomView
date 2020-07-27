@@ -216,7 +216,7 @@ public class ScaleScrollbar extends View {
             trackStartAngle = isLayoutRtl() ? ((int) (180 * (1 - scrollbarScale) / 2) + 90) : ((int) (180 * (1 - scrollbarScale) / 2) - 90);
             trackSweepAngle = (int) (180 * scrollbarScale);
 
-            trackArcLeft = isLayoutRtl() ?(0f+mScaleScrollbarDefaultPaddingEnd): (0f - mScaleScrollbarDefaultPaddingEnd);
+            trackArcLeft = isLayoutRtl() ?(0f+mScaleScrollbarDefaultPaddingEnd*2): (0f - mScaleScrollbarDefaultPaddingEnd*2);
             trackArcTop = 0f + mScaleScrollbarDefaultPaddingTop;
             trackArcRight = trackArcLeft + trackArcRadius * 2f;
             trackArcBottom = trackArcTop + trackArcRadius * 2f;

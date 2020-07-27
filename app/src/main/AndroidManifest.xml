@@ -39,6 +39,8 @@
             android:theme="@style/Theme.AppCompat.Light"/>
 
         <activity android:name=".slideRecyclerview.SlideRecyclerviewDemo"/>
+
+        <activity android:name=".springRecyclerview.SpringRecyclerviewDemo" />
     </application>
 
 </manifest>
